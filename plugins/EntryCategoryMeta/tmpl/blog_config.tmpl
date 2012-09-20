@@ -1,0 +1,26 @@
+<mtapp:setting
+   id="enable"
+   show_hint="0">
+  <mt:If name="enable" eq="1">
+    <input type="checkbox" name="enable" id="enable" value="1" checked="checked"/>
+    <mt:Else>
+    <input type="checkbox" name="enable" id="enable" value="1"/>
+  </mt:If>
+  <label for="enable"><__trans phrase="Enabled" /></label>
+</mtapp:setting>
+
+<mtapp:setting
+   id="template"
+   label="<__trans phrase='Form Template'>"
+   show_hint="1"
+   hint="<__trans phrase='Template.js format'>">
+  <textarea name="template" id="template" class="text"><$MTGetVar name="template" escape="html"$></textarea>
+</mtapp:setting>
+
+<mtapp:setting
+   id="fields"
+   label="<__trans phrase='Form Fields'>"
+   show_hint="1"
+   hint="<__trans phrase='Fill in a comma-separated.'>">
+  <input type="text" name="fields" class="text" value="<$MTGetVar name='fields' escape="html"$>" />
+</mtapp:setting>
