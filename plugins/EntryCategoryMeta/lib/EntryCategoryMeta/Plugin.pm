@@ -9,7 +9,6 @@ sub hdlr_ts_category_selector {
     my ( $cb, $app, $tmpl_ref ) = @_;
 
     my $blog_id = $app->blog ? $app->blog->id : undef;
-
     return 1 unless $blog_id && $plugin->get_config_value( 'enable', "blog:$blog_id" );
 
     my $template = $plugin->get_config_value( 'template', "blog:$blog_id" );
@@ -52,6 +51,9 @@ EOF
 sub hdlr_tp_edit_entry {
     my ( $cb, $app, $param, $tmpl ) = @_;
     
+    my $blog_id = $app->blog ? $app->blog->id : undef;
+    return 1 unless $blog_id && $plugin->get_config_value( 'enable', "blog:$blog_id" );
+
     my $set = 0;
     my %meta_params = ();
     
@@ -80,6 +82,10 @@ sub hdlr_tp_edit_entry {
 # プレビュー画面に埋め込み
 sub hdlr_tp_preview_entry {
     my ( $cb, $app, $param, $tmpl ) = @_;
+
+    my $blog_id = $app->blog ? $app->blog->id : undef;
+    return 1 unless $blog_id && $plugin->get_config_value( 'enable', "blog:$blog_id" );
+
     my %meta_params = _parse_entry_category_meta( $app );
     foreach my $cat_id ( keys %meta_params ) {
         my $meta_param = $meta_params{ $cat_id };
@@ -96,6 +102,9 @@ sub hdlr_tp_preview_entry {
 sub hdlr_cms_post_save_entry {
     my ( $cb, $app, $obj, $original ) = @_;
     
+    my $blog_id = $app->blog ? $app->blog->id : undef;
+    return 1 unless $blog_id && $plugin->get_config_value( 'enable', "blog:$blog_id" );
+
     my %meta_params = _parse_entry_category_meta( $app );
     # エンコードして保存
     require MT::Serialize;
@@ -147,6 +156,66 @@ sub _entry_category_meta {
     }
     
     return %meta_params;
+}
+
+# entryとcategoryを指定してメタデータ取り出し
+sub _get_entry_category_meta {
+    my ( $entry, $category ) = @_;
+    
+    # プレビュー
+    my $app = MT->instance;
+    if ( $app->can( 'mode' ) && $app->mode eq 'preview_entry' ) {
+        my %meta_params = _parse_entry_category_meta( $app );
+        return $meta_params{ $category->id };
+    }
+    
+    return unless ( defined( $entry ) && defined( $category ) );
+    
+    require MT::Request;
+    my $r = MT::Request->instance;
+    
+    my $cache_key = "entry_category_meta[@{[ $entry->id ]}][@{[ $category->id ]}]";
+    
+    my $meta_param = $r->cache( $cache_key );
+    return $meta_param if defined( $meta_param );
+    
+    my $placement = MT->model( 'placement' )->load( { entry_id => $entry->id, category_id => $category->id } );
+    return unless defined( $placement );
+    
+    require MT::Serialize;
+    my $data = $placement->entry_category_meta();
+    my $meta_param = $data ? ${ MT::Serialize->unserialize( $data ) } : {};
+    
+    $r->cache( $cache_key, $meta_param );
+    
+    return $meta_param;
+}
+
+# メタデータがある
+sub hdlr_if_entry_category_meta {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $entry = $ctx->stash( 'entry' );
+    my $category = $ctx->stash( 'category' );
+
+    my $meta_param = _get_entry_category_meta( $entry, $category );
+    
+    return defined( $meta_param );
+}
+
+# メタデータ取得
+sub hdlr_entry_category_meta {
+    my ( $ctx, $args ) = @_;
+    
+    my $entry = $ctx->stash( 'entry' );
+    my $category = $ctx->stash( 'category' );
+
+    my $meta_param = _get_entry_category_meta( $entry, $category );
+    
+    return '' unless defined( $meta_param );
+    
+    my $name = $args->{ name };
+    return $meta_param->{ $name };
 }
 
 1;

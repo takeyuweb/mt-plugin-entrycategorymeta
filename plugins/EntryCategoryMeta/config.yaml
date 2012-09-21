@@ -6,34 +6,37 @@ version: 1.0.0
 author_name: Yuichi Takeuchi
 author_link: http://takeyu-web.com/
 description: <__trans phrase="_PLUGIN_DESCRIPTION">
-schema_version: 20120919.01
+schema_version: 20120921.01
 
 object_types:
-  placement:
-    entry_category_meta: text default null
+    placement:
+        entry_category_meta: blob default null
 
 blog_config_template: blog_config.tmpl
 
 settings:
-  enable:
-    default: 0
-    scope: blog
-  template:
-    default: ""
-    scope: blog
-  fields:
-    default: "text1,select1"
-    scope: blog
+    enable:
+        default: 0
+        scope: blog
+    template:
+        default: ""
+        scope: blog
 
 callbacks:
-  # フォーム埋め込み
-  template_source.category_selector: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_ts_category_selector
-  # 値埋め込み
-  template_param.edit_entry: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_tp_edit_entry
-  # プレビュー画面で持ち越し
-  template_param.preview_strip: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_tp_preview_entry
-  template_param.preview_entry: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_tp_preview_entry
-  # 保存
-  cms_post_save.entry:
-    code: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_cms_post_save_entry
-    priority: 10
+    # フォーム埋め込み
+    template_source.category_selector: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_ts_category_selector
+    # 値埋め込み
+    template_param.edit_entry: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_tp_edit_entry
+    # プレビュー画面で持ち越し
+    template_param.preview_strip: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_tp_preview_entry
+    template_param.preview_entry: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_tp_preview_entry
+    # 保存
+    cms_post_save.entry:
+        code: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_cms_post_save_entry
+        priority: 10
+
+tags:
+    block:
+        IfEntryCategoryMeta?: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_if_entry_category_meta
+    function:
+        EntryCategoryMeta: $entrycategorymeta::EntryCategoryMeta::Plugin::hdlr_entry_category_meta
