@@ -186,7 +186,7 @@ sub _get_entry_category_meta {
     
     require MT::Serialize;
     my $data = $placement->entry_category_meta();
-    my $meta_param = $data ? ${ MT::Serialize->unserialize( $data ) } : {};
+    $meta_param = $data ? ${ MT::Serialize->unserialize( $data ) } : {};
     
     $r->cache( $cache_key, $meta_param );
     
