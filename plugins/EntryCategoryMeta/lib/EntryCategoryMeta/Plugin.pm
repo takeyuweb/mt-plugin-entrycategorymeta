@@ -35,6 +35,8 @@ sub hdlr_ts_category_selector {
 </mt:setvarblock>
 EOF
 
+    $template = '[# if ( item.meta == null ) item.meta = {} #]' . "\n". $template;
+
     my $orig = '<input type="<mt:if name="object_type" eq="page">radio<mt:else>checkbox</mt:if>" name="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" class="add-category-checkbox" <mt:if name="category_is_selected">checked="checked"</mt:if> /> [#|h item.label #]';
     my $to = '<input type="<mt:if name="object_type" eq="page">radio<mt:else>checkbox</mt:if>" name="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" class="add-category-checkbox" <mt:if name="category_is_selected">checked="checked"</mt:if> /> [#|h item.label #]' . '<div class="entry-category-meta" data-category_id="[#= item.id #]" onclick="event.stopPropagation(); return false;">' . $template . '</div>';
 

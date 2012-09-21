@@ -19,8 +19,18 @@ settings:
         default: 0
         scope: blog
     template:
-        default: ""
         scope: blog
+        default: |+
+            <select name="select1">
+            <option value=""]></option>
+            [# selected='' #][# if ( item.meta.select1 == "Apple" ) selected='selected' #]
+            <option value="Apple" [#= selected #]>Apple</option>
+            [# selected='' #][# if ( item.meta.select1 == "Orange" ) selected='selected' #]
+            <option value="Orange" [#= selected #]>Orange</option>
+            [# selected='' #][# if ( item.meta.select1 == "Banana" ) selected='selected' #]
+            <option value="Banana" [#= selected #]>Banana</option>
+            </select>
+            <input type="text" name="text1" value="[#= item.meta.text1 #]" />
 
 callbacks:
     # フォーム埋め込み
